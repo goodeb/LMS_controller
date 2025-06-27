@@ -63,8 +63,9 @@ def initialize_other_vars(kwargs):
             raise ValueError(f"Error setting up player named {player_name} connected to host at {server_url}")
         
         ButtonSet.get_button_obj((0,0,0)).label = parse_time(*time.localtime())
+        
         if player.power:
-            ButtonSet.current_page = 1    
+            ButtonSet.current_page = 1
             draw_now_playing()
             ButtonSet.needs_redrawing = False
             start_timer('now_playing_update')
@@ -105,9 +106,12 @@ def draw_now_playing():
     with open("art/cover.png",mode='wb') as file:
         file.write(cover_request.content)
     # add text
-    ButtonSet.get_button_obj((1,1,0)).label = player.title + '\n' +\
-                                             'By: ' + player.artist + '\n ' + \
-                                             'From: ' + player.album
+    label_text = player.title
+    if player.artist:
+        label_text += '\n' + 'By: ' + player.artist
+    if player.album:
+        label_text += '\n' + 'From: ' + player.album
+    ButtonSet.get_button_obj((1,1,0)).label = label_text
     ButtonSet.needs_redrawing = True
     return
 
@@ -135,14 +139,16 @@ def menu_inaction():
 def refresh_now_playing_screen():
     """If on and if song has changed since last call, refreshes now playing screen"""
     if player.power:
+        print('refreshing now playing')
         start_timer('now_playing_update')
-        old_track_id = player.track_id
         player.status_update()
-        if player.track_id == old_track_id:
-            return
-        if ButtonSet.current_page == 1:
+        print(player.last_update_track_id, 'vs.', player.track_id)
+        if player.last_update_track_id != player.track_id:
+            player.last_update_track_id = player.track_id
+            if ButtonSet.current_page == 1:
                 print('now playing update')
                 draw_now_playing()
+        
     else:
         ButtonSet.current_page = 0 
         ButtonSet.needs_redrawing = True

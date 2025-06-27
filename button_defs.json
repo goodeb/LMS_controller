@@ -24,8 +24,8 @@
     },
     {
         "name":"now_playing_cover_art",
-        "page":0,
-        "row":1,
+        "page":1,
+        "row":0,
         "column":0,
         "color":"black",
         "symbol":"cover.png",
