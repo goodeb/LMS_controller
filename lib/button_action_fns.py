@@ -7,7 +7,7 @@ File containing the functions that are called when a screen button is pressed.
 
 """
 
-from utils import color_converter, set_time, parse_time
+from utils import color_converter, set_time, parse_time, show_message
 from timer import setup_timer, start_timer, stop_timer
 import requests
 import json
@@ -56,7 +56,13 @@ def initialize_other_vars(kwargs):
             global player
             player_name = other_vars.pop('player',None)
             player = micropyLMS.get_player(server_url,player_name)
-            player.status_update()
+            if player:
+                player.status_update()
+            else:
+                show_message(board_obj,"Error setting up player")
+                time.sleep(10)
+                import machine
+                machine.reset()
         except Exception as exc:
             print(f'Error setting up player named {player_name} connected to host at {server_url}')
             print(exc)
@@ -67,6 +73,7 @@ def initialize_other_vars(kwargs):
         if player.power:
             ButtonSet.current_page = 1
             draw_now_playing()
+            player.last_update_current_track = player.current_track
             ButtonSet.needs_redrawing = False
             start_timer('now_playing_update')
         else:
@@ -75,13 +82,13 @@ def initialize_other_vars(kwargs):
     if other_vars:
         for var_name, var_value in other_vars.items():
             globals()[var_name]=var_value
-
+        
+        
 def change_brightness():
     """
     Checks time, dims screen between 'night' and 'morning' and sets timer
     for the next brightness change
     """
-    print('changing brightness')
     now = time.localtime()
     if now[3]+now[4]/60.0 >= night:
         board_obj.set_backlight(0.1)
@@ -135,7 +142,6 @@ def draw_now_playing():
 
 def update_clock():
     """Changes clock time and sets next check"""
-    print('updating clock')
     ButtonSet.get_button_obj((0,0,0)).label = parse_time(*time.localtime())
     if ButtonSet.current_page == 0:
         ButtonSet.needs_redrawing = True
@@ -143,47 +149,46 @@ def update_clock():
     
 def menu_inaction():
     """After no interaction for a time goes back to clock or now playing"""
-    print('menu_inaction')
+    player.status_update()
     if player.power:
        ButtonSet.current_page = 1
-       player.status_update()
        draw_now_playing()
        start_timer('now_playing_update')
     else:
        ButtonSet.current_page = 0
        ButtonSet.needs_redrawing = True
+       player.last_update_current_track =  None
        start_timer('check_power')
 
 def refresh_now_playing_screen():
     """If on and if song has changed since last call, refreshes now playing screen"""
     if player.power:
-        print('refreshing now playing')
         start_timer('now_playing_update')
         player.status_update()
         if player.last_update_current_track != player.current_track:
             player.last_update_current_track = player.current_track
             if ButtonSet.current_page == 1:
-                print('now playing update')
                 draw_now_playing()
     else:
         ButtonSet.current_page = 0 
         ButtonSet.needs_redrawing = True
+        player.last_update_current_track =  None
         start_timer('check_power')
 
 def check_power():
     """While power is off, checks if remote source has turned the player on"""
-    print('checking power')
     player.status_update()
     if not player.power:
         start_timer('check_power')
     else:
         ButtonSet.current_page = 1
-        draw_now_playing()
+        if player.last_update_current_track != player.current_track:
+            player.last_update_current_track = player.current_track
+            draw_now_playing()
         start_timer('now_playing_update')
 
 def jump_to_menu():
     """I user taps screen when in power off/clock mode goes to first menu page"""
-    print('clock touched')
     ButtonSet.current_page = 2
     player.status_update()
     ButtonSet.needs_redrawing = True
@@ -293,6 +298,7 @@ def power_off():
     """turns the player off and sets local state"""
     player.set_power(False)
     stop_timer('menu_interaction')
+    player.last_update_current_track =  None
     start_timer('check_power')
     ButtonSet.current_page = 0
     ButtonSet.needs_redrawing = True

@@ -124,7 +124,7 @@
         "name":"volume_up",
         "page":3,
         "row":0,
-        "column":0,
+        "column":1,
         "fn_name":"volume_up",
         "arg":3,
         "symbol":"VolumeUp.png",
@@ -134,17 +134,26 @@
         "name":"volume_down",
         "page":3,
         "row":1,
-        "column":0,
+        "column":1,
         "fn_name":"volume_down",
         "arg":3,
         "symbol":"VolumeDown.png",
         "color":"white"
     },
     {
+        "name":"mute",
+        "page":3,
+        "row":2,
+        "column":1,
+        "fn_name":"mute",
+        "symbol":"Mute.png",
+        "color":"white"
+    },
+    {
         "name":"shuffle",
         "page":3,
         "row":0,
-        "column":1,
+        "column":0,
         "fn_name":"shuffle",
         "symbol":"Shuffle.png",
         "color":"white"
@@ -153,7 +162,7 @@
         "name":"repeat",
         "page":3,
         "row":1,
-        "column":1,
+        "column":0,
         "fn_name":"repeat",
         "symbol":"Repeat.png",
         "color":"white"

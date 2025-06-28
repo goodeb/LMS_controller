@@ -79,11 +79,13 @@ def set_time(timezone):
     else:
         timezone = 'GMT'
     try:
+        print('getting',f'http://worldtimeapi.org/api/timezone/{timezone}')
         response = requests.get(f'http://worldtimeapi.org/api/timezone/{timezone}',timeout=5)
     except Exception as exc:
         print('Unable to get time')
         print(exc)
         return False
+        # TODO set timer to recheck?
     if response.status_code != 200:
             print("Query failed, response code: %s Full message: %s",response)
             return False
@@ -92,14 +94,15 @@ def set_time(timezone):
     day_of_week = result_data.get('day_of_week')-1
     if day_of_week < 0:
         day_of_week = 6
+    print(date_time)
     import machine
-    machine.RTC().datetime((date_time[0],
-                            date_time[1], 
-                            date_time[2], 
+    machine.RTC().datetime((int(date_time[0]),
+                            int(date_time[1]), 
+                            int(date_time[2]), 
                             day_of_week, 
-                            date_time[3], 
-                            date_time[4], 
-                            date_time[5], 
+                            int(date_time[3]), 
+                            int(date_time[4]), 
+                            float(date_time[5]), 
                             0))
     if result_data.get('dst'):
         dst_end = result_data.get('dst_until').replace('T',':').replace('-',':').replace('+',':').split(':')
