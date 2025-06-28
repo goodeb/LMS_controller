@@ -252,6 +252,20 @@ def play_favorite_number(number):
         print(f'ERROR: provided favorite number {number} is our of range')
     start_timer('menu_interaction')
 
+def play_playlist_number(number):
+    """
+    Replaces the current playlist with the item in the saved playlists at 
+    the position given as the arg. List starts at 0"""
+    get_count = player.player_query("playlists","0","1")
+    raw_playlists = player.player_query("playlists","0",str(get_count.get('count',0)),"tags:u")
+    playlists = raw_playlists.get('playlists_loop')
+    if number in range(len(playlists)):
+        single_item_playlist = [playlists[number]]
+        player.load_playlist(single_item_playlist)
+    else:
+        print(f'ERROR: provided playlist number {number} is our of range')
+    start_timer('menu_interaction')
+
 def add_to_favorites():
     """Adds the currently playing track to the favorites list"""
     player.status_update()
