@@ -19,8 +19,7 @@
         "column":0,
         "outline_color":"black",
         "label_color":"white",
-        "fn_name":"jump_to_menu",
-        "arg":0
+        "fn_name":"jump_to_menu"
     },
     {
         "name":"now_playing_cover_art",
@@ -90,8 +89,7 @@
         "page":2,
         "row":1,
         "column":2,
-        "fn_name":"play_favorite_number",
-        "arg":0,
+        "fn_name":"add_to_favorites",
         "symbol":"Favorite.png",
         "color":"white"
     },

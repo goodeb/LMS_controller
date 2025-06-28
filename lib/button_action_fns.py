@@ -101,16 +101,34 @@ def draw_now_playing():
     # draw cover
     url = player.scaled_image_url
     # NOTE: this scales down an image to 240x240, but currently doesn't scale up
-    print('drawing image',url)
     cover_request = requests.get(url)
     with open("art/cover.png",mode='wb') as file:
         file.write(cover_request.content)
     # add text
-    label_text = player.title
+    if player.title:
+        if len(player.title) > 35:
+            title = player.title[:31] + '...'
+        else:
+            title = player.title
+    label_text = title
     if player.artist:
-        label_text += '\n' + 'By: ' + player.artist
+        if len(player.artist) > 35:
+            artist = player.artist[:31] + '...'
+        else:
+            artist = player.artist
+        label_text += '\n' + artist
     if player.album:
-        label_text += '\n' + 'From: ' + player.album
+        if len(player.album) > 35:
+            album = player.album[:31] + '...'
+        else:
+            album = player.album
+        label_text += '\n' + album
+    elif player.remote_title:
+        if len(player.remote_title) > 35:
+            remote_title = player.remote_title[:31] + '...'
+        else:
+            remote_title = player.remote_title
+        label_text += '\n' + remote_title
     ButtonSet.get_button_obj((1,1,0)).label = label_text
     ButtonSet.needs_redrawing = True
     return
@@ -142,13 +160,11 @@ def refresh_now_playing_screen():
         print('refreshing now playing')
         start_timer('now_playing_update')
         player.status_update()
-        print(player.last_update_track_id, 'vs.', player.track_id)
-        if player.last_update_track_id != player.track_id:
-            player.last_update_track_id = player.track_id
+        if player.last_update_current_track != player.current_track:
+            player.last_update_current_track = player.current_track
             if ButtonSet.current_page == 1:
                 print('now playing update')
                 draw_now_playing()
-        
     else:
         ButtonSet.current_page = 0 
         ButtonSet.needs_redrawing = True
