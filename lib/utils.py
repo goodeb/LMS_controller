@@ -78,17 +78,29 @@ def set_time(timezone):
         timezone = remembered_timezone
     else:
         timezone = 'GMT'
-    try:
-        print('getting',f'http://worldtimeapi.org/api/timezone/{timezone}')
-        response = requests.get(f'http://worldtimeapi.org/api/timezone/{timezone}',timeout=5)
-    except Exception as exc:
-        print('Unable to get time')
-        print(exc)
+    
+    retries = 1
+    total_tries = 5
+    success = False
+    response = None
+    while not success and retries <= total_tries:
+        try:
+            response = requests.get(f'http://worldtimeapi.org/api/timezone/{timezone}',timeout=5)
+            success = True
+        except Exception as exc:
+            wait = retries * 3
+            print(f'{exc}, Waiting {wait} seconds to retry.')
+            time.sleep(wait)
+            retries += 1
+    if response:
+        if response.status_code != 200:
+                print(f"Bad return status of: {response}")
+                return False
+    if not success:
+        print('Maximum retries reached')
+        print('Will try setting clock again in one hour')
+        setup_timer('initial_clock_set',{"interval":3600,"action":"set_time","library":"utils","running":True,"long":True})
         return False
-        # TODO set timer to recheck?
-    if response.status_code != 200:
-            print("Query failed, response code: %s Full message: %s",response)
-            return False
     result_data = json.loads(response.content.decode(response.encoding))
     date_time = result_data.get('datetime').replace('T',':').replace('-',':').replace('+',':').split(':')
     day_of_week = result_data.get('day_of_week')-1
@@ -106,7 +118,9 @@ def set_time(timezone):
                             0))
     if result_data.get('dst'):
         dst_end = result_data.get('dst_until').replace('T',':').replace('-',':').replace('+',':').split(':')
-        dst_end_s = time.mktime((dst_end[0], dst_end[1], dst_end[2], dst_end[3], dst_end[4]+10, dst_end[5], 0, 0))
+        dst_end_s = time.mktime((dst_end[0], dst_end[1], dst_end[2], dst_end[3], dst_end[4]+10, dst_end[5], 0, 0)) 
+        # dst_until is in GMT, and we just set our clock to local
+        dst_end_s += result_data.get('raw_offset') + result_data.get('dst_offset')
         expiration_time = dst_end_s
     else:
         recheck_time = time.mktime((date_time[0], date_time[1], date_time[2], 2, 10, 0, date_time[6], date_time[7])) + 86400
