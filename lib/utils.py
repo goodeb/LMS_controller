@@ -85,7 +85,7 @@ def set_time(timezone):
     response = None
     while not success and retries <= total_tries:
         try:
-            response = requests.get(f'http://worldtimeapi.org/api/timezone/{timezone}',timeout=5)
+            response = requests.get(f'http://worldtimeapi.org/api/timezone/{timezone}')
             success = True
         except Exception as exc:
             wait = retries * 3
@@ -114,7 +114,7 @@ def set_time(timezone):
                             day_of_week, 
                             int(date_time[3]), 
                             int(date_time[4]), 
-                            float(date_time[5]), 
+                            int(date_time[5]), 
                             0))
     if result_data.get('dst'):
         dst_end = result_data.get('dst_until').replace('T',':').replace('-',':').replace('+',':').split(':')

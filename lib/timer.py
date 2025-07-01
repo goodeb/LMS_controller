@@ -32,11 +32,11 @@ class Timer():
         self.is_set = timer_def.get('running')
     
     def __repr__(self):
-        return_string = f'  Type:{self.__class__.__name__}\n'
+        return_string = f' Type:{self.__class__.__name__}\n'
         return_string +=f'  Is set:{self.is_set}\n'
-        return_string +=f'  Action:{self.action}()\n'
-        return_string +=f'  Interval:{self.interval}()\n'
-        return_string +=f'  Expiration:{self.expiration}()\n'
+        return_string +=f'  Action:{self.action}\n'
+        return_string +=f'  Interval:{self.interval}\n'
+        return_string +=f'  Expiration:{self.expiration}\n'
         return return_string
     
     def stop(self):
