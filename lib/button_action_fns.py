@@ -7,6 +7,7 @@ File containing the functions that are called when a screen button is pressed.
 
 """
 
+import utils
 from utils import color_converter, set_time, parse_time, show_message
 from timer import setup_timer, start_timer, stop_timer
 import requests
@@ -25,7 +26,8 @@ def initialize_other_vars(kwargs):
         global buzzer
         buzzer = Buzzer(other_vars.pop('buzzer_pin'))
     
-    #set_time(other_vars.pop('timezone',None))
+    utils.timezone = other_vars.pop('timezone','GMT')
+    set_time()
 
     if other_vars.get('timers'):
         for name,timer_def in other_vars.pop('timers').items():
@@ -77,6 +79,7 @@ def initialize_other_vars(kwargs):
             ButtonSet.needs_redrawing = False
             start_timer('now_playing_update')
         else:
+            ButtonSet.current_page = 0
             start_timer('check_power')
         
     if other_vars:
@@ -113,26 +116,26 @@ def draw_now_playing():
         file.write(cover_request.content)
     # add text
     if player.title:
-        if len(player.title) > 35:
-            title = player.title[:31] + '...'
+        if len(player.title) > 25:
+            title = player.title[:21] + '...'
         else:
             title = player.title
     label_text = title
     if player.artist:
-        if len(player.artist) > 35:
-            artist = player.artist[:31] + '...'
+        if len(player.artist) > 25:
+            artist = player.artist[:21] + '...'
         else:
             artist = player.artist
         label_text += '\n' + artist
     if player.album:
-        if len(player.album) > 35:
-            album = player.album[:31] + '...'
+        if len(player.album) > 25:
+            album = player.album[:21] + '...'
         else:
             album = player.album
         label_text += '\n' + album
     elif player.remote_title:
-        if len(player.remote_title) > 35:
-            remote_title = player.remote_title[:31] + '...'
+        if len(player.remote_title) > 25:
+            remote_title = player.remote_title[:21] + '...'
         else:
             remote_title = player.remote_title
         label_text += '\n' + remote_title
@@ -188,9 +191,8 @@ def check_power():
         start_timer('now_playing_update')
 
 def jump_to_menu():
-    """I user taps screen when in power off/clock mode goes to first menu page"""
+    """If user taps screen when in power off/clock mode goes to first menu page"""
     ButtonSet.current_page = 2
-    player.status_update()
     ButtonSet.needs_redrawing = True
     stop_timer('check_power')
     start_timer('menu_interaction')

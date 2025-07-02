@@ -66,26 +66,21 @@ def read_input_file(json_file):
         other_vars = init_data
         return buttons_defs, margin_ratio, default_color, background_color, default_font, corner_radius, other_vars
 
-remembered_timezone=None
+timezone = None
 
-def set_time(timezone):
+def set_time():
     """ Queries worldtimeapi.org to set the internal clock to the correct local time given 
-        by the arg timezone. Full list of timezones at http://worldtimeapi.org/timezones
+        by the global var timezone. Full list of timezones at http://worldtimeapi.org/timezones
     """
-    if timezone:
-        remembered_timezone = timezone
-    elif remembered_timezone:
-        timezone = remembered_timezone
-    else:
-        timezone = 'GMT'
-    
     retries = 1
-    total_tries = 5
+    total_tries = 3
     success = False
     response = None
     while not success and retries <= total_tries:
         try:
-            response = requests.get(f'http://worldtimeapi.org/api/timezone/{timezone}')
+            url = f'http://worldtimeapi.org/api/timezone/{timezone}'
+            url.rstrip(" \n")
+            response = requests.get(url)
             success = True
         except Exception as exc:
             wait = retries * 3
@@ -99,14 +94,14 @@ def set_time(timezone):
     if not success:
         print('Maximum retries reached')
         print('Will try setting clock again in one hour')
-        setup_timer('initial_clock_set',{"interval":3600,"action":"set_time","library":"utils","running":True,"long":True})
+        setup_timer('initial_clock_set',{"interval":20,"action":"set_time","library":"utils","running":True,"long":True})
         return False
     result_data = json.loads(response.content.decode(response.encoding))
     date_time = result_data.get('datetime').replace('T',':').replace('-',':').replace('+',':').split(':')
     day_of_week = result_data.get('day_of_week')-1
     if day_of_week < 0:
         day_of_week = 6
-    print(date_time)
+    
     import machine
     machine.RTC().datetime((int(date_time[0]),
                             int(date_time[1]), 
@@ -114,11 +109,16 @@ def set_time(timezone):
                             day_of_week, 
                             int(date_time[3]), 
                             int(date_time[4]), 
-                            int(date_time[5]), 
+                            int(float(date_time[5])), 
                             0))
     if result_data.get('dst'):
         dst_end = result_data.get('dst_until').replace('T',':').replace('-',':').replace('+',':').split(':')
-        dst_end_s = time.mktime((dst_end[0], dst_end[1], dst_end[2], dst_end[3], dst_end[4]+10, dst_end[5], 0, 0)) 
+        dst_end_s = time.mktime((int(dst_end[0]),
+                                 int(dst_end[1]),
+                                 int(dst_end[2]),
+                                 int(dst_end[3]),
+                                 int(dst_end[4])+1,
+                                 int(dst_end[5]), 0, 0))
         # dst_until is in GMT, and we just set our clock to local
         dst_end_s += result_data.get('raw_offset') + result_data.get('dst_offset')
         expiration_time = dst_end_s
