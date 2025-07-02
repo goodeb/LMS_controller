@@ -1,5 +1,5 @@
 """
-utils.py 2025-06-02 v 1.0
+utils.py 2025-07-02 v 1.1
 
 Author: Brent Goode
 
@@ -69,8 +69,9 @@ def read_input_file(json_file):
 timezone = None
 
 def set_time():
-    """ Queries worldtimeapi.org to set the internal clock to the correct local time given 
-        by the global var timezone. Full list of timezones at http://worldtimeapi.org/timezones
+    """ Queries worldtimeapi.org to set the internal clock to the correct local
+        time given by the global var timezone.
+        Full list of timezones at http://worldtimeapi.org/timezones
     """
     retries = 1
     total_tries = 3
@@ -94,7 +95,11 @@ def set_time():
     if not success:
         print('Maximum retries reached')
         print('Will try setting clock again in one hour')
-        setup_timer('initial_clock_set',{"interval":3600,"action":"set_time","library":"utils","running":True,"long":True})
+        setup_timer('initial_clock_set',{"interval":3600,
+                                         "action":"set_time",
+                                         "library":"utils",
+                                         "running":True,
+                                         "long":True})
         return False
     result_data = json.loads(response.content.decode(response.encoding))
     date_time = result_data.get('datetime').replace('T',':').replace('-',':').replace('+',':').split(':')
@@ -123,14 +128,23 @@ def set_time():
         dst_end_s += result_data.get('raw_offset') + result_data.get('dst_offset')
         expiration_time = dst_end_s
     else:
-        recheck_time = time.mktime((date_time[0], date_time[1], date_time[2], 2, 10, 0, date_time[6], date_time[7])) + 86400
+        recheck_time = time.mktime((date_time[0], 
+                                    date_time[1], 
+                                    date_time[2], 
+                                    2, 10, 0, 
+                                    date_time[6], 
+                                    date_time[7])) + 86400
         expiration_time = recheck_time
-    setup_timer('dst_change',{"expiration":expiration_time,"action":"set_time","library":"utils","running":True,"long":True})
+    setup_timer('dst_change',{"expiration":expiration_time,
+                              "action":"set_time",
+                              "library":"utils",
+                              "running":True
+                              "long":True})
     return True
 
 def parse_time(year, month, mday, hour, minute, second, weekday, yearday):
-    """breaks out the response to time.localimte() and returns a string of the time
-        to be displayed on screen
+    """breaks out the response to time.localimte() and returns a string of the
+    time to be displayed on screen
     """
     raw_hour = hour
     am_pm = "AM"

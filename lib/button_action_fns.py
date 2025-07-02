@@ -26,14 +26,16 @@ def initialize_other_vars(kwargs):
         global buzzer
         buzzer = Buzzer(other_vars.pop('buzzer_pin'))
     
+    # Set the internal clock to local time, and set a timer for DST change
     utils.timezone = other_vars.pop('timezone','GMT')
     set_time()
 
+    # Setup the other timers defined in button_defs.json
     if other_vars.get('timers'):
         for name,timer_def in other_vars.pop('timers').items():
             setup_timer(name,timer_def)
 
-    
+    # Set the screen brightness based on time and set the timer for the next change
     if other_vars.get('night'):
         global night
         night = str(other_vars.pop('night'))
@@ -47,7 +49,8 @@ def initialize_other_vars(kwargs):
         morning_list.append('0')
         morning = float(morning_list[0])+float(morning_list[1])/60.0
     change_brightness()
-        
+    
+    # Set up the connection to the LMS server
     if other_vars.get('host'):
         server_url = micropyLMS.build_url(other_vars.pop('host'),
                                           other_vars.pop('prefix','http'),
@@ -70,8 +73,10 @@ def initialize_other_vars(kwargs):
             print(exc)
             raise ValueError(f"Error setting up player named {player_name} connected to host at {server_url}")
         
+        # Set the clock button text to the current time
         ButtonSet.get_button_obj((0,0,0)).label = parse_time(*time.localtime())
         
+        # Depending on player power set the correct starting screen
         if player.power:
             ButtonSet.current_page = 1
             draw_now_playing()
@@ -81,7 +86,8 @@ def initialize_other_vars(kwargs):
         else:
             ButtonSet.current_page = 0
             start_timer('check_power')
-        
+    
+    # Catch any other custom variables
     if other_vars:
         for var_name, var_value in other_vars.items():
             globals()[var_name]=var_value
@@ -102,31 +108,37 @@ def change_brightness():
     else:
         board_obj.set_backlight(1)
         change_time = time.mktime((now[0], now[1], now[2], 22, 0, 0, now[6], now[7]))
-    setup_timer('change_brightness',{"expiration":change_time,"action":"change_brightness","library":"button_action_fns","running":True,"long":True})
+    setup_timer('change_brightness',{"expiration":change_time,
+                                     "action":"change_brightness",
+                                     "library":"button_action_fns",
+                                     "running":True,
+                                     "long":True})
 
 
 def draw_now_playing():
     """ Pulls scaled image file for cover button and resets label button text
     """
-    # draw cover
+    
     url = player.scaled_image_url
     # NOTE: this scales down an image to 240x240, but currently doesn't scale up
     cover_request = requests.get(url)
     with open("art/cover.png",mode='wb') as file:
         file.write(cover_request.content)
-    # add text
+    
     if player.title:
         if len(player.title) > 25:
             title = player.title[:21] + '...'
         else:
             title = player.title
     label_text = title
+    
     if player.artist:
         if len(player.artist) > 25:
             artist = player.artist[:21] + '...'
         else:
             artist = player.artist
         label_text += '\n' + artist
+    
     if player.album:
         if len(player.album) > 25:
             album = player.album[:21] + '...'
@@ -139,12 +151,13 @@ def draw_now_playing():
         else:
             remote_title = player.remote_title
         label_text += '\n' + remote_title
+    
     ButtonSet.get_button_obj((1,1,0)).label = label_text
     ButtonSet.needs_redrawing = True
     return
 
 def update_clock():
-    """Changes clock time and sets next check"""
+    """Changes clock button text and sets next check"""
     ButtonSet.get_button_obj((0,0,0)).label = parse_time(*time.localtime())
     if ButtonSet.current_page == 0:
         ButtonSet.needs_redrawing = True
@@ -252,7 +265,10 @@ def play_random_artist():
 def play_favorite_number(number):
     """
     Replaces the current playlist with the item in the favorites list at 
-    the position given as the arg. List starts at 0"""
+    the position given as the arg. List starts at 0
+    Args:
+        number: an int of the item in the saved playlist
+    """
     raw_favorites = player.player_query("favorites","items","0","want_url:1")
     favorites = raw_favorites.get('loop_loop')
     if number in range(len(favorites)):
@@ -265,9 +281,15 @@ def play_favorite_number(number):
 def play_playlist_number(number):
     """
     Replaces the current playlist with the item in the saved playlists at 
-    the position given as the arg. List starts at 0"""
+    the position given as the arg. List starts at 0
+    Args:
+        number: an int of the item in the saved playlist
+    """
     get_count = player.player_query("playlists","0","1")
-    raw_playlists = player.player_query("playlists","0",str(get_count.get('count',0)),"tags:u")
+    raw_playlists = player.player_query("playlists",
+                                        "0",
+                                        str(get_count.get('count',0)),
+                                        "tags:u")
     playlists = raw_playlists.get('playlists_loop')
     if number in range(len(playlists)):
         single_item_playlist = [playlists[number]]
