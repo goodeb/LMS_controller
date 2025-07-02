@@ -94,7 +94,7 @@ def set_time():
     if not success:
         print('Maximum retries reached')
         print('Will try setting clock again in one hour')
-        setup_timer('initial_clock_set',{"interval":20,"action":"set_time","library":"utils","running":True,"long":True})
+        setup_timer('initial_clock_set',{"interval":3600,"action":"set_time","library":"utils","running":True,"long":True})
         return False
     result_data = json.loads(response.content.decode(response.encoding))
     date_time = result_data.get('datetime').replace('T',':').replace('-',':').replace('+',':').split(':')

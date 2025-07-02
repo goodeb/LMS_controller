@@ -154,14 +154,17 @@ def menu_inaction():
     """After no interaction for a time goes back to clock or now playing"""
     player.status_update()
     if player.power:
-       ButtonSet.current_page = 1
-       draw_now_playing()
-       start_timer('now_playing_update')
+        ButtonSet.current_page = 1
+        if player.last_update_current_track != player.current_track:
+            player.last_update_current_track = player.current_track
+            draw_now_playing()
+        ButtonSet.needs_redrawing = True
+        start_timer('now_playing_update')
     else:
-       ButtonSet.current_page = 0
-       ButtonSet.needs_redrawing = True
-       player.last_update_current_track =  None
-       start_timer('check_power')
+        ButtonSet.current_page = 0
+        ButtonSet.needs_redrawing = True
+        player.last_update_current_track =  None
+        start_timer('check_power')
 
 def refresh_now_playing_screen():
     """If on and if song has changed since last call, refreshes now playing screen"""
