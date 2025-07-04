@@ -124,7 +124,7 @@
         "name":"volume_up",
         "page":3,
         "row":0,
-        "column":1,
+        "column":2,
         "fn_name":"volume_up",
         "arg":3,
         "symbol":"VolumeUp.png",
@@ -134,7 +134,7 @@
         "name":"volume_down",
         "page":3,
         "row":1,
-        "column":1,
+        "column":2,
         "fn_name":"volume_down",
         "arg":3,
         "symbol":"VolumeDown.png",
@@ -144,7 +144,7 @@
         "name":"mute",
         "page":3,
         "row":2,
-        "column":1,
+        "column":2,
         "fn_name":"mute",
         "symbol":"Mute.png",
         "color":"white"
@@ -161,10 +161,29 @@
     {
         "name":"repeat",
         "page":3,
-        "row":1,
-        "column":0,
+        "row":0,
+        "column":1,
         "fn_name":"repeat",
         "symbol":"Repeat.png",
+        "color":"white"
+    },
+    {
+        "name":"sync_unsync",
+        "page":3,
+        "row":1,
+        "column":0,
+        "fn_name":"sync_unsync",
+        "symbol":"Synced.png",
+        "color":"white"
+    },
+    {
+        "name":"sleep",
+        "page":3,
+        "row":1,
+        "column":1,
+        "fn_name":"go_to_sleep",
+        "arg":15,
+        "symbol":"Sleep.png",
         "color":"white"
     },
     {
@@ -175,4 +194,11 @@
         "fn_name":"previous_page_w_interaction",
         "symbol":"Back.png",
         "color":"white"
+    },
+    {
+        "name":"buffer",
+        "page":3,
+        "row":2,
+        "column":1,
+        "color":"black"
     }]}

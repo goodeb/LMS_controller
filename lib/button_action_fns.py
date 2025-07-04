@@ -86,7 +86,15 @@ def initialize_other_vars(kwargs):
         else:
             ButtonSet.current_page = 0
             start_timer('check_power')
-    
+        
+        # Set correct Icon for sync/unsync button. The buttons shows the opposite of the current state
+        global sync_unsync_button
+        sync_unsync_button = ButtonSet.get_button_obj((3,1,0))
+        if player.synced:
+            sync_unsync_button.symbon = 'art/Unsync.png'
+        else:
+            sync_unsync_button.symbon = 'art/Sync.png'
+
     # Catch any other custom variables
     if other_vars:
         for var_name, var_value in other_vars.items():
@@ -382,6 +390,18 @@ def go_to_sleep(time: int | str):
     elif isinstance(time,str):
         time = str(60*int(time))
     player.player_query("sleep", time)
+    start_timer('menu_interaction')
+
+def sync_unsync():
+    """If synced, unsyncs. If unsynced, syncs to all other players"""
+    if player.synced:
+        player.unsync()
+        sync_unsync_button.symbon = 'art/Sync.png'
+        sync_unsync_button.redraw_button()
+    else:
+        player.sync_to_all()
+        sync_unsync_button.symbon = 'art/Unsync.png'
+        sync_unsync_button.redraw_button()
     start_timer('menu_interaction')
 
 def press_button(button_name: str):
