@@ -394,6 +394,7 @@ def go_to_sleep(time: int | str):
 
 def sync_unsync():
     """If synced, unsyncs. If unsynced, syncs to all other players"""
+    player.status_update()
     if player.synced:
         player.unsync()
         sync_unsync_button.symbol_path = '/art/Sync.png'
