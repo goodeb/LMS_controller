@@ -138,7 +138,7 @@ def set_time():
     setup_timer('dst_change',{"expiration":expiration_time,
                               "action":"set_time",
                               "library":"utils",
-                              "running":True
+                              "running":True,
                               "long":True})
     return True
 

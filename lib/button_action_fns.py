@@ -91,9 +91,9 @@ def initialize_other_vars(kwargs):
         global sync_unsync_button
         sync_unsync_button = ButtonSet.get_button_obj((3,1,0))
         if player.synced:
-            sync_unsync_button.symbon = 'art/Unsync.png'
+            sync_unsync_button.symbol_path = '/art/Unsync.png'
         else:
-            sync_unsync_button.symbon = 'art/Sync.png'
+            sync_unsync_button.symbol_path = '/art/Sync.png'
 
     # Catch any other custom variables
     if other_vars:
@@ -396,11 +396,11 @@ def sync_unsync():
     """If synced, unsyncs. If unsynced, syncs to all other players"""
     if player.synced:
         player.unsync()
-        sync_unsync_button.symbon = 'art/Sync.png'
+        sync_unsync_button.symbol_path = '/art/Sync.png'
         sync_unsync_button.redraw_button()
     else:
         player.sync_to_all()
-        sync_unsync_button.symbon = 'art/Unsync.png'
+        sync_unsync_button.symbol_path = '/art/Unsync.png'
         sync_unsync_button.redraw_button()
     start_timer('menu_interaction')
 
