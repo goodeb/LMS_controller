@@ -60,7 +60,9 @@ def initialize_other_vars(kwargs):
         try:
             global player
             player_name = other_vars.pop('player',None)
-            player = micropyLMS.get_player(server_url,player_name)
+            player = micropyLMS.get_player(server_url,
+                                           player_name,
+                                           other_vars.pop('image_scale'))
             if player:
                 player.status_update()
             else:
