@@ -124,8 +124,7 @@ def change_brightness():
 
 
 def draw_now_playing():
-    """ Pulls scaled image file for cover button and resets label button text
-    """
+    """ Pulls scaled image file for cover button and resets label button text"""
     
     url = player.scaled_image_url
     # NOTE: this scales down an image to 240x240, but currently doesn't scale up
@@ -133,12 +132,14 @@ def draw_now_playing():
     with open("art/cover.png",mode='wb') as file:
         file.write(cover_request.content)
     
+    label_text = ''
+
     if player.title:
         if len(player.title) > 25:
             title = player.title[:21] + '...'
         else:
             title = player.title
-    label_text = title
+        label_text += title
     
     if player.artist:
         if len(player.artist) > 25:
@@ -179,7 +180,6 @@ def menu_inaction():
         if player.last_update_current_track != player.current_track:
             player.last_update_current_track = player.current_track
             draw_now_playing()
-        ButtonSet.needs_redrawing = True
         start_timer('now_playing_update')
     else:
         ButtonSet.current_page = 0
