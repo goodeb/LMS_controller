@@ -135,28 +135,28 @@ def draw_now_playing():
     label_text = ''
 
     if player.title:
-        if len(player.title) > 25:
-            title = player.title[:21] + '...'
+        if len(player.title) > max_text_length:
+            title = player.title[:max_text_length-3] + '...'
         else:
             title = player.title
         label_text += title
     
     if player.artist:
-        if len(player.artist) > 25:
-            artist = player.artist[:21] + '...'
+        if len(player.artist) > max_text_length:
+            artist = player.artist[:max_text_length-3] + '...'
         else:
             artist = player.artist
         label_text += '\n' + artist
     
     if player.album:
-        if len(player.album) > 25:
-            album = player.album[:21] + '...'
+        if len(player.album) > max_text_length:
+            album = player.album[:max_text_length-3] + '...'
         else:
             album = player.album
         label_text += '\n' + album
     elif player.remote_title:
-        if len(player.remote_title) > 25:
-            remote_title = player.remote_title[:21] + '...'
+        if len(player.remote_title) > max_text_length:
+            remote_title = player.remote_title[:max_text_length-3] + '...'
         else:
             remote_title = player.remote_title
         label_text += '\n' + remote_title

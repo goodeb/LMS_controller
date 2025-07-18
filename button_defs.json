@@ -7,6 +7,7 @@
    "timezone":"America/Los_Angeles",
    "night":22,
    "morning":6,
+   "max_text_length":25,
    "timers":{"clock_update":{"interval":60000,"action":"update_clock","library":"button_action_fns","running":"True"},
              "now_playing_update":{"interval":5000,"action":"refresh_now_playing_screen","library":"button_action_fns","running":"False"},
              "menu_interaction":{"interval":10000,"action":"menu_inaction","library":"button_action_fns","running":"False"},
