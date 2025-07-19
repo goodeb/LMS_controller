@@ -118,13 +118,34 @@ def change_brightness():
     now = time.localtime()
     if now[3]+now[4]/60.0 >= night:
         board_obj.set_backlight(0.1)
-        change_time = time.mktime((now[0], now[1], now[2], 6, 0, 0, now[6], now[7])) + 86400
+        change_time = time.mktime((now[0], 
+                                   now[1], 
+                                   now[2], 
+                                   int(morning), 
+                                   int(60*(morning % 1.0)), 
+                                   0, 
+                                   now[6], 
+                                   now[7])) + 86400
     elif  now[3]+now[4]/60.0 < morning:
         board_obj.set_backlight(0.1)
-        change_time = time.mktime((now[0], now[1], now[2], 6, 0, 0, now[6], now[7]))
+        change_time = time.mktime((now[0], 
+                                   now[1], 
+                                   now[2], 
+                                   int(morning), 
+                                   int(60*(morning % 1.0)), 
+                                   0, 
+                                   now[6], 
+                                   now[7]))
     else:
         board_obj.set_backlight(1)
-        change_time = time.mktime((now[0], now[1], now[2], 22, 0, 0, now[6], now[7]))
+        change_time = time.mktime((now[0], 
+                                   now[1], 
+                                   now[2], 
+                                   int(night), 
+                                   int(60*(night % 1.0)), 
+                                   0, 
+                                   now[6], 
+                                   now[7]))
     setup_timer('change_brightness',{"expiration":change_time,
                                      "action":"change_brightness",
                                      "library":"button_action_fns",
@@ -185,14 +206,13 @@ def menu_inaction():
     """After no interaction for a time goes back to clock or now playing"""
     player.status_update()
     if player.power:
-        ButtonSet.current_page = 1
+        ButtonSet.jump_to_page(1)
         if player.last_update_current_track != player.current_track:
             player.last_update_current_track = player.current_track
             draw_now_playing()
         start_timer('now_playing_update')
     else:
-        ButtonSet.current_page = 0
-        ButtonSet.needs_redrawing = True
+        ButtonSet.jump_to_page(0)
         player.last_update_current_track =  None
         start_timer('check_power')
 
@@ -206,8 +226,7 @@ def refresh_now_playing_screen():
             if ButtonSet.current_page == 1:
                 draw_now_playing()
     else:
-        ButtonSet.current_page = 0 
-        ButtonSet.needs_redrawing = True
+        ButtonSet.jump_to_page(0)
         player.last_update_current_track =  None
         start_timer('check_power')
 
@@ -225,8 +244,7 @@ def check_power():
 
 def jump_to_menu():
     """If user taps screen when in power off/clock mode goes to first menu page"""
-    ButtonSet.current_page = 2
-    ButtonSet.needs_redrawing = True
+    ButtonSet.jump_to_page(2)
     stop_timer('check_power')
     start_timer('menu_interaction')
 
