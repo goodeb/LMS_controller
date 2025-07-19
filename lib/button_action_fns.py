@@ -97,6 +97,13 @@ def initialize_other_vars(kwargs):
         else:
             sync_unsync_button.symbol_path = '/art/Sync.png'
 
+    # Get max text length, or if not given, set to default
+    global max_text_length
+    if other_vars.get('max_text_length'):
+        max_text_length = other_vars.pop('max_text_length')
+    else:
+        max_text_length = 25
+    
     # Catch any other custom variables
     if other_vars:
         for var_name, var_value in other_vars.items():
