@@ -39,7 +39,7 @@ def stop_timer(name):
     """
     Stops a timer before it expires. Won't trigger the timer's action
         Args:
-            name: string with the timer name to be stoped
+            name: string with the timer name to be stope
     """
     timer_registry.get(name).stop()
 
@@ -51,6 +51,16 @@ def trigger_timer(name):
     """
     timer_registry.get(name).stop()
     timer_registry.get(name).action()
+
+def override_timer_expiration(name, interval):
+    """
+    Overrides previous interval to set expiration to interval from now.
+    Args:
+        name: string with the timer name to have it expiration overridden
+        interval: time till new expiration in milliseconds if ShortTimer
+                  seconds if LongTimer
+    """
+    timer_registry.get(name).override_expiration(interval)
 
 def show_timers():
     """Shows all timers in the registry"""
@@ -127,6 +137,9 @@ class ShortTimer(Timer):
     check_timer()
         Evaluates whether the time has expired. If so timer is stopped and
         the action is triggered.
+    override_expiration(interval: int)
+        Overrides previous interval to set expiration to interval milliseconds
+        from now.
     """
     def __init__(self,timer_def):
         if timer_def.get('interval'):
@@ -154,6 +167,16 @@ class ShortTimer(Timer):
         if time.ticks_diff(now, self.expiration) > 0 and self.is_set:
             self.is_set = False # timers are one shot by default
             self.action() # if timer needs to repeat, reset it in action fn
+    
+    def override_expiration(self, interval: int):
+        """
+        Overrides previous interval to set expiration to interval milliseconds 
+        from now.
+        Args:
+            interval: integer number of second from now to expire
+        """
+        self.expiration = time.ticks_ms() + interval
+
         
 class LongTimer(Timer):
     """
@@ -188,6 +211,9 @@ class LongTimer(Timer):
     check_timer()
         Evaluates whether the time has expired. If so timer is stopped and
         the action is triggered.
+    override_expiration(interval: int)
+        Overrides previous interval to set expiration to interval seconds 
+        from now.
     """
     def __init__(self,timer_def):
         if timer_def.get('interval'):
@@ -216,4 +242,11 @@ class LongTimer(Timer):
             self.is_set = False # timers are one shot by default
             self.action() # if timer needs to repeat, reset it in action fn
 
-
+    def override_expiration(self, interval: int):
+        """
+        Overrides previous interval to set expiration to interval seconds 
+        from now.
+        Args:
+            interval: integer number of second from now to expire
+        """
+        self.expiration = time.time() + interval

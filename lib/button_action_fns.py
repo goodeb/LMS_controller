@@ -9,7 +9,7 @@ File containing the functions that are called when a screen button is pressed.
 
 import utils
 from utils import color_converter, set_time, parse_time, show_message
-from timer import setup_timer, start_timer, stop_timer
+from timer import setup_timer, start_timer, stop_timer, override_timer_expiration
 import requests
 import json
 import time
@@ -197,10 +197,13 @@ def draw_now_playing():
 
 def update_clock():
     """Changes clock button text and sets next check"""
-    ButtonSet.get_button_obj((0,0,0)).label = parse_time(*time.localtime())
+    now = time.localtime()
+    ButtonSet.get_button_obj((0,0,0)).label = parse_time(*now)
     if ButtonSet.current_page == 0:
         ButtonSet.needs_redrawing = True
     start_timer('clock_update')
+    if now[6] != 0:
+        override_timer_expiration('clock_update',1000*(60-now[6]))
     
 def menu_inaction():
     """After no interaction for a time goes back to clock or now playing"""
