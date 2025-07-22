@@ -87,7 +87,13 @@ class Timer():
     def __init__(self,timer_def):
         exec(f'from {timer_def.get("library")} import {timer_def.get("action")}')
         self.action = locals()[timer_def.get('action')]
-        self.is_set = timer_def.get('running')
+        if isinstance(timer_def.get('running'),str):
+            if timer_def.get('running').lower() == 'false':
+                self.is_set = False
+            else:
+                self.is_set = True
+        else:
+            self.is_set = timer_def.get('running')
         
     def __repr__(self):
         return_string = f' Type:{self.__class__.__name__}\n'
@@ -155,7 +161,7 @@ class ShortTimer(Timer):
         if self.interval:
             self.expiration = time.ticks_ms() + self.interval
         else:
-            self.expiration = self.get('expiration')
+            self.expiration = self.expiration
         self.is_set = True
 
     def check_timer(self):
@@ -229,7 +235,7 @@ class LongTimer(Timer):
         if self.get('interval'):
             self.expiration = time.time() + self.interval
         else:
-            self.expiration = self.get('expiration')
+            self.expiration = self.expiration
         self.is_set = True
 
     def check_timer(self):

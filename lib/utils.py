@@ -74,7 +74,7 @@ def set_time():
         Full list of timezones at http://worldtimeapi.org/timezones
     """
     retries = 1
-    total_tries = 3
+    total_tries = 4
     success = False
     response = None
     while not success and retries <= total_tries:

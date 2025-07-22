@@ -74,6 +74,13 @@ def initialize_other_vars(kwargs):
             print(f'Error setting up player named {player_name} connected to host at {server_url}')
             print(exc)
             raise ValueError(f"Error setting up player named {player_name} connected to host at {server_url}")
+    
+        # Get max text length, or if not given, set to default
+        global max_text_length
+        if other_vars.get('max_text_length'):
+            max_text_length = other_vars.pop('max_text_length')
+        else:
+            max_text_length = 25
         
         # Set the clock button text to the current time
         ButtonSet.get_button_obj((0,0,0)).label = parse_time(*time.localtime())
@@ -97,13 +104,6 @@ def initialize_other_vars(kwargs):
         else:
             sync_unsync_button.symbol_path = '/art/Sync.png'
 
-    # Get max text length, or if not given, set to default
-    global max_text_length
-    if other_vars.get('max_text_length'):
-        max_text_length = other_vars.pop('max_text_length')
-    else:
-        max_text_length = 25
-    
     # Catch any other custom variables
     if other_vars:
         for var_name, var_value in other_vars.items():
@@ -155,9 +155,8 @@ def change_brightness():
 
 def draw_now_playing():
     """ Pulls scaled image file for cover button and resets label button text"""
-    
     url = player.scaled_image_url
-    # NOTE: this scales down an image to 240x240, but currently doesn't scale up
+    # NOTE: this scales down an image, but currently doesn't scale up
     cover_request = requests.get(url)
     with open("art/cover.png",mode='wb') as file:
         file.write(cover_request.content)
@@ -221,14 +220,13 @@ def menu_inaction():
 
 def refresh_now_playing_screen():
     """If on and if song has changed since last call, refreshes now playing screen"""
-    if player.power:
+    if player.power and ButtonSet.current_page == 1:
         start_timer('now_playing_update')
         player.status_update()
         if player.last_update_current_track != player.current_track:
             player.last_update_current_track = player.current_track
-            if ButtonSet.current_page == 1:
-                draw_now_playing()
-    else:
+            draw_now_playing()
+    elif not player.power:
         ButtonSet.jump_to_page(0)
         player.last_update_current_track =  None
         start_timer('check_power')
@@ -239,6 +237,7 @@ def check_power():
     if not player.power:
         start_timer('check_power')
     else:
+        start_timer('now_playing_update')
         ButtonSet.current_page = 1
         if player.last_update_current_track != player.current_track:
             player.last_update_current_track = player.current_track
@@ -428,11 +427,13 @@ def sync_unsync():
     if player.synced:
         player.unsync()
         sync_unsync_button.symbol_path = '/art/Sync.png'
-        sync_unsync_button.redraw_button()
+        #sync_unsync_button.redraw_button()
+        ButtonSet.needs_redrawing = True
     else:
         player.sync_to_all()
         sync_unsync_button.symbol_path = '/art/Unsync.png'
-        sync_unsync_button.redraw_button()
+        #sync_unsync_button.redraw_button()
+        ButtonSet.needs_redrawing = True
     start_timer('menu_interaction')
 
 def press_button(button_name: str):
