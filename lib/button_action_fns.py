@@ -109,15 +109,32 @@ def initialize_other_vars(kwargs):
         for var_name, var_value in other_vars.items():
             globals()[var_name]=var_value
         
-        
+    # TODO remove once clock freeze is fixed
+    global color_cycle
+    color_cycle = [[40,40,40],[40,0,0],[0,40,0],[0,0,40],[0,0,0]]
+    global last_now
+    last_now = time.localtime()
+
+
 def change_brightness():
     """
     Checks time, dims screen between 'night' and 'morning' and sets timer
     for the next brightness change
     """
     now = time.localtime()
+    # TODO remove once clock freeze is fixed
+    gmt_now = time.gmtime()
+    if now != gmt_now:
+        board_obj.set_led_rgb(2,40,0,0)
+    if now == last_now:
+        board_obj.set_led_rgb(3,0,40,0)
+    else:
+        last_now = now
+    
     if now[3]+now[4]/60.0 >= night:
         board_obj.set_backlight(0.1)
+        # TODO remove once clock freeze is fixed
+        board_obj.set_led_rgb(1,0,0,0)
         change_time = time.mktime((now[0], 
                                    now[1], 
                                    now[2], 
@@ -128,6 +145,8 @@ def change_brightness():
                                    now[7])) + 86400
     elif  now[3]+now[4]/60.0 < morning:
         board_obj.set_backlight(0.1)
+        # TODO remove once clock freeze is fixed
+        board_obj.set_led_rgb(1,0,0,0)
         change_time = time.mktime((now[0], 
                                    now[1], 
                                    now[2], 
@@ -138,6 +157,8 @@ def change_brightness():
                                    now[7]))
     else:
         board_obj.set_backlight(1)
+        # TODO remove once clock freeze is fixed
+        board_obj.set_led_rgb(1,40,40,40)
         change_time = time.mktime((now[0], 
                                    now[1], 
                                    now[2], 
@@ -197,6 +218,19 @@ def draw_now_playing():
 def update_clock():
     """Changes clock button text and sets next check"""
     now = time.localtime()
+    
+    # TODO remove when clock freeze fixed
+    color_cycle.append(color_cycle.pop(0))
+    r,g,b = color_converter(color_cycle[0])
+    board_obj.set_led_rgb(0,r,g,b)
+    gmt_now = time.gmtime()
+    if now != gmt_now:
+        board_obj.set_led_rgb(4,40,0,0)
+    if now == last_now:
+        board_obj.set_led_rgb(5,0,40,0)
+    else:
+        last_now = now
+    
     ButtonSet.get_button_obj((0,0,0)).label = parse_time(*now)
     if ButtonSet.current_page == 0:
         ButtonSet.needs_redrawing = True
