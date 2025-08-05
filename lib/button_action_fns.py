@@ -112,9 +112,7 @@ def initialize_other_vars(kwargs):
     # TODO remove once clock freeze is fixed
     global color_cycle
     color_cycle = [[40,40,40],[40,0,0],[0,40,0],[0,0,40],[0,0,0]]
-    global last_now
-    last_now = time.localtime()
-
+    
 
 def change_brightness():
     """
@@ -126,15 +124,9 @@ def change_brightness():
     gmt_now = time.gmtime()
     if now != gmt_now:
         board_obj.set_led_rgb(2,40,0,0)
-    if now == last_now:
-        board_obj.set_led_rgb(3,0,40,0)
-    else:
-        last_now = now
     
     if now[3]+now[4]/60.0 >= night:
         board_obj.set_backlight(0.1)
-        # TODO remove once clock freeze is fixed
-        board_obj.set_led_rgb(1,0,0,0)
         change_time = time.mktime((now[0], 
                                    now[1], 
                                    now[2], 
@@ -145,8 +137,6 @@ def change_brightness():
                                    now[7])) + 86400
     elif  now[3]+now[4]/60.0 < morning:
         board_obj.set_backlight(0.1)
-        # TODO remove once clock freeze is fixed
-        board_obj.set_led_rgb(1,0,0,0)
         change_time = time.mktime((now[0], 
                                    now[1], 
                                    now[2], 
@@ -157,8 +147,6 @@ def change_brightness():
                                    now[7]))
     else:
         board_obj.set_backlight(1)
-        # TODO remove once clock freeze is fixed
-        board_obj.set_led_rgb(1,40,40,40)
         change_time = time.mktime((now[0], 
                                    now[1], 
                                    now[2], 
@@ -226,10 +214,6 @@ def update_clock():
     gmt_now = time.gmtime()
     if now != gmt_now:
         board_obj.set_led_rgb(4,40,0,0)
-    if now == last_now:
-        board_obj.set_led_rgb(5,0,40,0)
-    else:
-        last_now = now
     
     ButtonSet.get_button_obj((0,0,0)).label = parse_time(*now)
     if ButtonSet.current_page == 0:
@@ -237,7 +221,16 @@ def update_clock():
     start_timer('clock_update')
     if now[6] != 0:
         override_timer_expiration('clock_update',1000*(60-now[6]))
-    
+        # TODO remove when clock freeze fixed
+        board_obj.set_led_rgb(5,40,40,40)
+    # TODO remove when clock freeze fixed
+    else:
+        board_obj.set_led_rgb(5,0,0,0)
+    if now[6] > 59:
+        board_obj.set_led_rgb(6,0,0,40)
+    if not isinstance(now[6],int):
+        board_obj.set_led_rgb(7,40,0,0)
+
 def menu_inaction():
     """After no interaction for a time goes back to clock or now playing"""
     player.status_update()
