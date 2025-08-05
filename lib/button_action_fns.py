@@ -123,7 +123,7 @@ def change_brightness():
     # TODO remove once clock freeze is fixed
     gmt_now = time.gmtime()
     if now != gmt_now:
-        board_obj.set_led_rgb(2,40,0,0)
+        board_obj.set_led_rgb(1,40,0,0)
     
     if now[3]+now[4]/60.0 >= night:
         board_obj.set_backlight(0.1)
@@ -213,7 +213,7 @@ def update_clock():
     board_obj.set_led_rgb(0,r,g,b)
     gmt_now = time.gmtime()
     if now != gmt_now:
-        board_obj.set_led_rgb(4,40,0,0)
+        board_obj.set_led_rgb(1,40,0,0)
     
     ButtonSet.get_button_obj((0,0,0)).label = parse_time(*now)
     if ButtonSet.current_page == 0:
@@ -222,14 +222,14 @@ def update_clock():
     if now[6] != 0:
         override_timer_expiration('clock_update',1000*(60-now[6]))
         # TODO remove when clock freeze fixed
-        board_obj.set_led_rgb(5,40,40,40)
+        board_obj.set_led_rgb(3,40,40,40)
     # TODO remove when clock freeze fixed
     else:
-        board_obj.set_led_rgb(5,0,0,0)
+        board_obj.set_led_rgb(3,0,0,0)
     if now[6] > 59:
-        board_obj.set_led_rgb(6,0,0,40)
+        board_obj.set_led_rgb(4,0,0,40)
     if not isinstance(now[6],int):
-        board_obj.set_led_rgb(7,40,0,0)
+        board_obj.set_led_rgb(5,40,0,0)
 
 def menu_inaction():
     """After no interaction for a time goes back to clock or now playing"""
