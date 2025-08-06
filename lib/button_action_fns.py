@@ -219,16 +219,16 @@ def update_clock():
     if ButtonSet.current_page == 0:
         ButtonSet.needs_redrawing = True
     start_timer('clock_update')
-    if now[6] != 0:
-        override_timer_expiration('clock_update',1000*(60-now[6]))
+    if now[5] != 0:
+        override_timer_expiration('clock_update',1000*(60-now[5]))
         # TODO remove when clock freeze fixed
         board_obj.set_led_rgb(3,40,40,40)
     # TODO remove when clock freeze fixed
     else:
         board_obj.set_led_rgb(3,0,0,0)
-    if now[6] > 59:
+    if now[5] > 59:
         board_obj.set_led_rgb(4,0,0,40)
-    if not isinstance(now[6],int):
+    if not isinstance(now[5],int):
         board_obj.set_led_rgb(5,40,0,0)
 
 def menu_inaction():
