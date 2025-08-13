@@ -202,5 +202,6 @@
         "page":3,
         "row":2,
         "column":1,
-        "color":"black"
+        "color":"black",
+        "fn_name":"show_time"
     }]}

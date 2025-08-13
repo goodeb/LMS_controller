@@ -208,10 +208,10 @@ def update_clock():
     now = time.localtime()
     
     # TODO remove when clock freeze fixed
+    gmt_now = time.gmtime()
     color_cycle.append(color_cycle.pop(0))
     r,g,b = color_converter(color_cycle[0])
     board_obj.set_led_rgb(0,r,g,b)
-    gmt_now = time.gmtime()
     if now != gmt_now:
         board_obj.set_led_rgb(1,40,0,0)
     
@@ -231,6 +231,16 @@ def update_clock():
     if not isinstance(now[5],int):
         board_obj.set_led_rgb(5,40,0,0)
 
+# TODO remove when clock freeze fixed
+def show_time():
+    now = time.localtime()
+    board_obj.display.set_pen(board_obj.display.create_pen(0,0,0))
+    board_obj.display.clear()
+    board_obj.display.set_pen(board_obj.display.create_pen(255,255,255))
+    board_obj.display.set_font("bitmap8")
+    board_obj.display.text(f'{now[0]}/{now[1]}/{now[2]} {now[3]}:{now[4]}:{now[5]}',0,20,scale=4)
+    board_obj.update()
+    
 def menu_inaction():
     """After no interaction for a time goes back to clock or now playing"""
     player.status_update()
