@@ -232,7 +232,7 @@ class LongTimer(Timer):
 
     def start(self):
         """Stars the timer with the correct expiation"""
-        if self.get('interval'):
+        if self.interval:
             self.expiration = time.time() + self.interval
         else:
             self.expiration = self.expiration
