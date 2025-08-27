@@ -2,9 +2,9 @@
    "default_font":"OpenSans-Regular.af",
    "default_color":"white",
    "background_color":"black",
-   "host":"192.168.1.88",
-   "player":"Livingroom",
-   "timezone":"America/Los_Angeles",
+   "host":"HOST_IP_ADDRESS",
+   "player":"PLAYER_NAME",
+   "timezone":"TIME_ZONE",
    "night":22,
    "morning":6,
    "max_text_length":28,
@@ -202,6 +202,5 @@
         "page":3,
         "row":2,
         "column":1,
-        "color":"black",
-        "fn_name":"show_time"
+        "color":"black"
     }]}

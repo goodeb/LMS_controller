@@ -20,7 +20,6 @@ def force_restart():
     for name, timer in timer_registry.items():
         if timer.is_set:
             timer.start()
-            print(f'restarting {name}')
 
 def setup_timer(name,timer_def):
     """
