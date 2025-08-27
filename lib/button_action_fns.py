@@ -9,7 +9,7 @@ File containing the functions that are called when a screen button is pressed.
 
 import utils
 from utils import color_converter, set_time, parse_time, show_message
-from timer import setup_timer, start_timer, stop_timer, override_timer_expiration
+from timer import setup_timer, start_timer, stop_timer, override_timer_expiration, force_restart
 import requests
 import json
 import time
@@ -240,6 +240,8 @@ def show_time():
     board_obj.display.set_font("bitmap8")
     board_obj.display.text(f'{now[0]}/{now[1]}/{now[2]} {now[3]}:{now[4]}:{now[5]}',0,20,scale=4)
     board_obj.update()
+    force_restart()
+    
     
 def menu_inaction():
     """After no interaction for a time goes back to clock or now playing"""
