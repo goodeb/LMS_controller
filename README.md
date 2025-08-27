@@ -31,12 +31,13 @@ Next change the following fields in ``button_defs.json`` to the correct values f
 Other arguments that are optional to change if you want are:
 * night: the time at night when the screen dims. Use 24 our time instead of AM/PM. If you want a time that is not on the hour, put this in quotes like "22:30"
 * morning: the time at night when the screen brightens. Use 24 our time instead of AM/PM. If you want a time that is not on the hour, put this in quotes like "7:30"
-* max_text_length: the maximum number of characters shown in the three now playing information fields (title, artist, and album) before the text is truncated with ... . The text size here is rescaled so that all characters fit on the screen, so longer max_text_length values can result in unreadably small text for extremely long names.
-## Timers
-
-It is also possible to change how quickly the controller goes back to the default screen after the last button press, how often teh now playing information updates, and how quickly the controller activates after the music system turns on. More about the timers and their functionality 
+* max_text_length: the maximum number of characters shown in the three now playing information fields (title, artist, and album) before the text is truncated with an ellipsis. The text size is rescaled so that all characters fit on the screen, so longer max_text_length values can result in unreadably small text when track info is extremely long.
 
 Be aware that the clock may not set itself correctly during the initial boot up, but it will try again repeatedly until successful.
+
+## Timers
+
+It is also possible to change the timings of automatic actions like how quickly the controller goes back to the default screen after the last button press, how often the now playing information updates, and how quickly the controller activates after the music system turns on. {More about the timers and their functionality} 
 
 # Customizing Button Layout and Function
 
@@ -51,5 +52,5 @@ If none of these do what is desired, then sending commands or queries via the ``
     "arg":["mixer","muting","1"],
     ...
 ```
-Of note there is already a ``mute()`` function included in ``button_action_fns.py``
+Of note there is already a ``mute()`` function included in ``button_action_fns.py``.
 

@@ -274,7 +274,6 @@ def check_power():
     if not player.power:
         start_timer('check_power')
     else:
-        start_timer('now_playing_update')
         ButtonSet.current_page = 1
         if player.last_update_current_track != player.current_track:
             player.last_update_current_track = player.current_track
