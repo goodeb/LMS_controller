@@ -10,7 +10,7 @@ Main script for stream deck app
 from presto import Presto
 from button_set import ButtonSet
 from utils import show_message, read_input_file
-from timer import check_timers
+from micropytimer import check_timers
 import ezwifi
 
 board_obj = Presto(full_res=True)

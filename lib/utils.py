@@ -10,7 +10,7 @@ Utility functions for the stream deck project
 import json
 import requests
 import time
-from timer import setup_timer
+from micropytimer import setup_timer
 
 
 def color_converter(color):

@@ -9,7 +9,7 @@ File containing the functions that are called when a screen button is pressed.
 
 import utils
 from utils import color_converter, set_time, parse_time, show_message
-from timer import setup_timer, start_timer, stop_timer, override_timer_expiration, force_restart
+from micropytimer import setup_timer, start_timer, stop_timer, override_timer_expiration
 import requests
 import json
 import time
