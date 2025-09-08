@@ -359,7 +359,8 @@ class FunctionButton(Button):
         self.arg = arg
         self.label = label
         self.depressed = False
-        
+        self.vector = PicoVector(self.display)
+
         try:
             open(f'/art/{label_font}')
             self.label_font = f'/art/{label_font}'
@@ -398,7 +399,6 @@ class FunctionButton(Button):
 
     def draw_button(self):
         """Draws the elements of a Function button with correctly scaled symbol and text"""
-        vector = PicoVector(self.display)
         self.display.set_pen(self.outline_color)
         shape = Polygon()
         shape.rectangle(self.x, 
@@ -407,7 +407,7 @@ class FunctionButton(Button):
                         self.height, 
                         corners=(self.radius, self.radius, self.radius, self.radius), 
                         stroke=3)
-        vector.draw(shape)
+        self.vector.draw(shape)
         
         if self.symbol_path:
             png = PNG(self.display)
@@ -421,22 +421,22 @@ class FunctionButton(Button):
         if self.label:
             self.display.set_pen(self.label_color)
             if self.label_font:
-                vector.set_font(self.label_font, int(0.33*self.height))
-                vector.set_font_align(HALIGN_CENTER)
-                text_x, text_y, text_width, text_height = vector.measure_text(self.label)
+                self.vector.set_font(self.label_font, int(0.33*self.height))
+                self.vector.set_font_align(HALIGN_CENTER)
+                text_x, text_y, text_width, text_height = self.vector.measure_text(self.label)
                 if text_height > 0.9*self.height:
-                    vector.set_font(self.label_font, int(0.85*self.height/text_height*0.33*self.height))
-                    text_x, text_y, text_width, text_height = vector.measure_text(self.label)
-                text_x, text_y, text_width, text_height = vector.measure_text(self.label)
+                    self.vector.set_font(self.label_font, int(0.85*self.height/text_height*0.33*self.height))
+                    text_x, text_y, text_width, text_height = self.vector.measure_text(self.label)
+                text_x, text_y, text_width, text_height = self.vector.measure_text(self.label)
                 if text_width > 0.9*self.width:
-                    vector.set_font(self.label_font, int(0.85*self.width/text_width*0.33*self.height))
-                    text_x, text_y, text_width, text_height = vector.measure_text(self.label)
+                    self.vector.set_font(self.label_font, int(0.85*self.width/text_width*0.33*self.height))
+                    text_x, text_y, text_width, text_height = self.vector.measure_text(self.label)
                 first_line = self.label.split('\n')[0]
-                first_line_x, first_line_y, first_line_width, first_line_height = vector.measure_text(first_line)
+                first_line_x, first_line_y, first_line_width, first_line_height = self.vector.measure_text(first_line)
                 last_line = self.label.split('\n')[-1]
-                last_line_x, last_line_y, last_line_width, last_line_height = vector.measure_text(last_line)
+                last_line_x, last_line_y, last_line_width, last_line_height = self.vector.measure_text(last_line)
                 text_y_offset = int(0.5*text_height - first_line_height - last_line_y)
-                vector.text(self.label, 
+                self.vector.text(self.label, 
                             int(self.x+0.5*self.width-0.52*text_width),
                             int(self.y+0.5*self.height-text_y_offset),
                             0,

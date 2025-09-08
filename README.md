@@ -33,7 +33,7 @@ Note that this project overwrites the default ``main.py`` file so that other app
 Next change the following fields in ``button_defs.json`` to the correct values for your local setup:
 * host : this is the local network IP address for the server. If the port is the standard 9000, no additional argument is needed. If a non-default port was used in the server setup, then that new value needs to be added into the JSON file as ``"port":xxxx``
 * player : This is the player name that this controller is tied to
-* timezone : Pick your local timezone from the list at http://worldtimeapi.org/timezones. This set the Presto's clock to the correct time during boot up and set when the clock change for daylight savings time, if its done in that time zone.
+* timezone : Pick your local timezone from the list at http://worldtimeapi.org/timezones. This set the Presto's clock to the correct time during boot up and set when the clock changes for daylight savings time, if its done in that time zone.
 
 Other arguments that are optional to change if you want are:
 * night: the time at night when the screen dims. Use 24 hour time instead of AM/PM. If you want a time that is not on the hour, put this in quotes like "22:30"
@@ -52,6 +52,7 @@ Don't change the 'buttons' on page 0 and 1. These are the clock and now playing 
 
 The first page of control buttons is page 2. For a full description on how to configure these buttons see the [customizing buttons](https://github.com/goodeb/Presto-Stream-Deck?tab=readme-ov-file#customizing-buttons) section of the base project.
 The functions that can be called by a button are in the ``button_action_fns.py`` file in the ``/lib`` directory. Many useful actions already have a function defined, but additional actions can be implemented without coding by calling the ``press_button()``, ``send_command()``, or ``send_query()`` functions with appropriate arguments.
+
 The easiest option is the ``press_button()`` function, which acts like pressing a button on a remote with the button name given as an argument. The list of possible button names that can be given is in the ``Default.map`` file included in the project folder for easy reference.
 If none of these do what is desired, then sending commands or queries via the ``send_command()`` or ``send_query()`` functions are available. The only difference between these functions is that ``send_query()`` captures the server's response and ``send_command()`` does not. The arguments to the functions need to be provided in ``button_defs.json`` file as lists. The function will unwind this list into multiple positional arguments. More information on how to configure these commands can be found at https://lyrion.org/reference/cli/using-the-cli/ under the jsonrpc.js section and the ``<command>`` part of the body of the request. As one example, if you wanted to have a button send the command to mute the player using the ``send_command()`` function as described in the first example [here](https://lyrion.org/reference/cli/using-the-cli/#examples) you would configure the ``fn_name`` and ``args`` fields of the button definition as follows
 
