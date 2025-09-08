@@ -157,9 +157,12 @@ def draw_now_playing():
     """ Pulls scaled image file for cover button and resets label button text"""
     url = player.scaled_image_url
     # NOTE: this scales down an image, but currently doesn't scale up
-    cover_request = requests.get(url)
-    with open("art/cover.png",mode='wb') as file:
-        file.write(cover_request.content)
+    try:
+        cover_request = requests.get(url)
+        with open("art/cover.png",mode='wb') as file:
+            file.write(cover_request.content)
+    except Exception as exc:
+        print(f"Error while attempting to download cover at: {exc}")
     
     label_text = ''
 

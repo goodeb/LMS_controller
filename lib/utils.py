@@ -94,8 +94,8 @@ def set_time():
                 return False
     if not success:
         print('Maximum retries reached')
-        print('Will try setting clock again in one hour')
-        setup_timer('initial_clock_set',{"interval":3600,
+        print('Will try setting clock again in ten minutes')
+        setup_timer('initial_clock_set',{"interval":600,
                                          "action":"set_time",
                                          "library":"utils",
                                          "running":True,
