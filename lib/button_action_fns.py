@@ -97,12 +97,15 @@ def initialize_other_vars(kwargs):
             start_timer('check_power')
         
         # Set correct Icon for sync/unsync button. The buttons shows the opposite of the current state
-        global sync_unsync_button
-        sync_unsync_button = ButtonSet.get_button_obj((3,1,0))
-        if player.synced:
-            sync_unsync_button.symbol_path = '/art/Unsync.png'
-        else:
-            sync_unsync_button.symbol_path = '/art/Sync.png'
+        if other_vars.get("sync_unsync_button_addr"):
+            sync_unsync_button_addr = other_vars.pop("sync_unsync_button_addr")
+            global sync_unsync_button
+            sync_unsync_button_addr = tuple([int(i) for i in sync_unsync_button_addr.split(',')])
+            sync_unsync_button = ButtonSet.get_button_obj(sync_unsync_button_addr)
+            if player.synced:
+                sync_unsync_button.symbol_path = '/art/Unsync.png'
+            else:
+                sync_unsync_button.symbol_path = '/art/Sync.png'
 
     # Catch any other custom variables
     if other_vars:

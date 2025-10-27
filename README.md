@@ -41,6 +41,8 @@ Other arguments that are optional to change if you want are:
 * night: the time at night when the screen dims. Use 24 hour time instead of AM/PM. If you want a time that is not on the hour, put this in quotes like "22:30"
 * morning: the time in the morning when the screen brightens. Use 24 hour time instead of AM/PM. If you want a time that is not on the hour, put this in quotes like "7:30"
 * max_text_length: the maximum number of characters shown in the three now playing information fields (title, artist, and album) before the text is truncated with an ellipsis. The text size is rescaled so that all characters fit on the screen, so longer max_text_length values can result in unreadably small text when track info is extremely long.
+* image_scale: the resolution that the cover art image should be scaled down to by the server so that it fits on the screen. Input as a string with a leading underscore and an x separating the width and height. Note that the server cannot upscale images smaller than this.
+* sync_unsync_button_addr: If you include a sync/unsync button like in the example set up this is the button's address (page, row, column) as a comma separated string. This variable is used during setup to initialize the functionality of changing that button's image depending on the player's current sync status.
 
 Be aware that the clock may not set itself correctly during the initial boot up, but it will try again repeatedly until successful.
 
