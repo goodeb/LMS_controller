@@ -128,12 +128,12 @@ def set_time():
         dst_end_s += result_data.get('raw_offset') + result_data.get('dst_offset')
         expiration_time = dst_end_s
     else:
-        recheck_time = time.mktime((date_time[0], 
-                                    date_time[1], 
-                                    date_time[2], 
+        recheck_time = time.mktime((int(date_time[0]), 
+                                    int(date_time[1]), 
+                                    int(date_time[2]), 
                                     2, 10, 0, 
-                                    date_time[6], 
-                                    date_time[7])) + 86400
+                                    int(date_time[6]), 
+                                    int(date_time[7]))) + 86400
         expiration_time = recheck_time
     setup_timer('dst_change',{"expiration":expiration_time,
                               "action":"set_time",
