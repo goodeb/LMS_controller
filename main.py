@@ -20,7 +20,8 @@ board_obj = Presto(full_res=True)
 
 show_message(board_obj,"Loading...")
 
-ezwifi.connect(verbose=True)
+if not ezwifi.connect(verbose=True):
+    show_message(board_obj,"Wifi failed to connect")
 
 buttons_defs, margin_ratio, default_color, background_color, \
     default_font, corner_radius, other_vars = read_input_file('button_defs.json')

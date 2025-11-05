@@ -8,8 +8,8 @@ Utility functions for the stream deck project
 """
 
 import json
-import requests
 import time
+import ntptime
 from micropytimer import setup_timer
 
 
@@ -69,29 +69,31 @@ def read_input_file(json_file):
 timezone = None
 
 def set_time():
-    """ Queries worldtimeapi.org to set the internal clock to the correct local
-        time given by the global var timezone.
-        Full list of timezones at http://worldtimeapi.org/timezones
+    """ Uses micropython's ntptime module and local time zone data from the file
+        tz_data.json to correctly set the clock to local time and to keep up
+        with when to change to/from DTS.
     """
+    with open('tz_data.json','r') as file:
+        dst_database = json.load(file)
+    
+    current_tz = dst_database.get(timezone)
+    if not current_tz:
+        current_tz = {1735718400:0}
+    current_tz = {int(k):v for k,v in current_tz.items()}
+    
     retries = 1
     total_tries = 4
     success = False
-    response = None
+    
     while not success and retries <= total_tries:
         try:
-            url = f'http://worldtimeapi.org/api/timezone/{timezone}'
-            url.rstrip(" \n")
-            response = requests.get(url)
+            gmt_time = ntptime.time()
             success = True
         except Exception as exc:
             wait = retries * 3
             print(f'{exc}, Waiting {wait} seconds to retry.')
             time.sleep(wait)
             retries += 1
-    if response:
-        if response.status_code != 200:
-                print(f"Bad return status of: {response}")
-                return False
     if not success:
         print('Maximum retries reached')
         print('Will try setting clock again in ten minutes')
@@ -101,45 +103,38 @@ def set_time():
                                          "running":True,
                                          "long":True})
         return False
-    result_data = json.loads(response.content.decode(response.encoding))
-    date_time = result_data.get('datetime').replace('T',':').replace('-',':').replace('+',':').split(':')
-    day_of_week = result_data.get('day_of_week')-1
-    if day_of_week < 0:
-        day_of_week = 6
+    
+    still_less = False
+    next_time_change = None
+    current_delta = 0
+    
+    for time_change in sorted(current_tz):
+        print(time_change)
+        if still_less:
+            next_time_change = time_change
+            still_less = False
+        if time_change < gmt_time:
+            current_delta = current_tz[time_change]
+            still_less = True
+    
+    time_tuple = time.gmtime(gmt_time + current_delta)
     
     import machine
-    machine.RTC().datetime((int(date_time[0]),
-                            int(date_time[1]), 
-                            int(date_time[2]), 
-                            day_of_week, 
-                            int(date_time[3]), 
-                            int(date_time[4]), 
-                            int(float(date_time[5])), 
+    machine.RTC().datetime((time_tuple[0],
+                            time_tuple[1],
+                            time_tuple[2],
+                            time_tuple[6],
+                            time_tuple[3],
+                            time_tuple[4],
+                            time_tuple[5],
                             0))
-    if result_data.get('dst'):
-        dst_end = result_data.get('dst_until').replace('T',':').replace('-',':').replace('+',':').split(':')
-        dst_end_s = time.mktime((int(dst_end[0]),
-                                 int(dst_end[1]),
-                                 int(dst_end[2]),
-                                 int(dst_end[3]),
-                                 int(dst_end[4])+1,
-                                 int(dst_end[5]), 0, 0))
-        # dst_until is in GMT, and we just set our clock to local
-        dst_end_s += result_data.get('raw_offset') + result_data.get('dst_offset')
-        expiration_time = dst_end_s
-    else:
-        recheck_time = time.mktime((int(date_time[0]), 
-                                    int(date_time[1]), 
-                                    int(date_time[2]), 
-                                    2, 10, 0, 
-                                    int(date_time[6]), 
-                                    int(date_time[7]))) + 86400
-        expiration_time = recheck_time
-    setup_timer('dst_change',{"expiration":expiration_time,
-                              "action":"set_time",
-                              "library":"utils",
-                              "running":True,
-                              "long":True})
+    
+    if next_time_change:
+        setup_timer('dst_change',{"expiration":next_time_change,
+                                "action":"set_time",
+                                "library":"utils",
+                                "running":True,
+                                "long":True})
     return True
 
 def parse_time(year, month, mday, hour, minute, second, weekday, yearday):
@@ -159,4 +154,4 @@ def parse_time(year, month, mday, hour, minute, second, weekday, yearday):
         minute = f'0{minute}'
         
     return f"{hour}:{minute} {am_pm}"
-
+    
