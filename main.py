@@ -2,11 +2,11 @@
 # NAME LMS Controller
 # DESC App to turn the Presto into a music system controller
 """
-stream_deck.py 2025-06-02 v 1.0
+main.py 2025-06-02 v 1.0
 
 Author: Brent Goode
 
-Main script for stream deck app
+Main script for LMS controller project
 
 """
 
