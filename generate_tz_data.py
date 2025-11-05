@@ -1,3 +1,12 @@
+"""
+generate_tz_data.py 2025-11-05 v 1.0
+
+Author: Brent Goode
+
+Script for generate time zone data file for the LMS_Controller project
+
+"""
+
 import argparse
 import pytz
 from datetime import datetime

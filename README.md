@@ -7,6 +7,7 @@ Turns the Pimornoi Presto into a controller and display for a LMS music system
 * [Getting Started](#getting-started)
 * [Using](#using)
 * [Customizing Buttons](#customizing-buttons)
+* [Time Zone Data](#time-zone-data-generation)
 
 # Overview
 
@@ -26,7 +27,7 @@ Next install the micropytimer package. This can be done using Thony's package sy
 
 ## 3 Download LMS_controller files and copy them to the device.
 
-Download the project files. Upload the the main script ``main.py`` and the definitions file ``button_defs.json`` to the Presto's top level directory. Next upload the project's art directory and its contents to the Presto's top level directory. Finally, upload the contents of the projects' ``/lib`` directory to the ``/lib`` directory on the Presto.
+Download the project files. Upload the the main script ``main.py``, the definitions file ``button_defs.json``, and the time zone data file ``tz_data.json`` to the Presto's top level directory. Next upload the project's art directory and its contents to the Presto's top level directory. Finally, upload the contents of the projects' ``/lib`` directory to the ``/lib`` directory on the Presto.
 
 Note that this project overwrites the default ``main.py`` file so that other apps are not available, but after a power loss the device will boot back to the controller automatically. If you want to have this run as another app button on the default set up, rename ``main.py`` before copying it to the device.
 
@@ -35,7 +36,7 @@ Note that this project overwrites the default ``main.py`` file so that other app
 Next change the following fields in ``button_defs.json`` to the correct values for your local setup:
 * host : this is the local network IP address for the server. If the port is the standard 9000, no additional argument is needed. If a non-default port was used in the server setup, then that new value needs to be added into the JSON file as ``"port":xxxx``
 * player : This is the player name that this controller is tied to
-* timezone : Pick your local timezone from the list at http://worldtimeapi.org/timezones. This is used to set the Presto's clock to the correct time during boot up and to get when the clock changes for daylight savings time, if its done in that time zone.
+* timezone : Pick your local timezone from the list in the file ``tz_data.json``. This is used to set the Presto's clock to the correct time during boot up and to get when the clock changes for daylight savings time, if its done in that time zone.
 
 Other arguments that are optional to change if you want are:
 * night: the time at night when the screen dims. Use 24 hour time instead of AM/PM. If you want a time that is not on the hour, put this in quotes like "22:30"
@@ -66,4 +67,27 @@ The easiest option is the ``press_button()`` function, which acts like pressing 
     ...
 ```
 Of note there is already a ``mute()`` function included in ``button_action_fns.py``.
+
+
+# Time Zone Data
+
+Since python time zone utilities like ``pytz`` don't work on micropython, this project uses a static time zone data file generate by the provided script ``generate_tz_data.py``. The included data file contains all current time zone data as of November 2025, and it has future DST transition dates going out to 2037. This makes for a fairly large file that contains information that is mostly not used, since this device will only be setup for a single time zone. If you want a smaller file, it is possible to regenerate the data file to contain only the data needed for the single time zone where you are. Also, if there are any changes to DST transitions in your area in the future, the file will need to be regenerated. Finally, since the data runs out at a certain data, the file will need to be regenerated before the data runs out.
+
+## Regenerating Time Zone Data
+
+The provided script ``generate_tz_data.py`` uses the ``pytz`` library from standard python to generate the time zone data file. In addition it can show a list of all time zones that are possible.
+
+To regenerate the full data file, run the following command form this project's main directory on your local system:
+
+```python3 generate_tz_data.py```
+
+To generate a data file with only a single time zone's data run the script with the ``--tz`` argument and add the name of the time zone in question. One example is:
+
+```python3 generate_tz_data.py --tz America/Los_Angeles```
+
+To see a list of all possible time zones, run the script with the following option:
+
+```python3 generate_tz_data.py --show_time_zones```
+
+This list also shows all the possible values that could be chosen for the ``"timezone"`` field in ``button_defs.json``
 
