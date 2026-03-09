@@ -105,13 +105,12 @@ def set_time():
         return False
     
     still_less = False
-    next_time_change = None
+    next_time_change_local = None
     current_delta = 0
     
     for time_change in sorted(current_tz):
-        print(time_change)
         if still_less:
-            next_time_change = time_change
+            next_time_change_local = time_change + current_delta
             still_less = False
         if time_change < gmt_time:
             current_delta = current_tz[time_change]
@@ -130,7 +129,7 @@ def set_time():
                             0))
     
     if next_time_change:
-        setup_timer('dst_change',{"expiration":next_time_change,
+        setup_timer('dst_change',{"expiration":next_time_change_local,
                                 "action":"set_time",
                                 "library":"utils",
                                 "running":True,
