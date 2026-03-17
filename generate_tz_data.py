@@ -9,7 +9,7 @@ Script for generate time zone data file for the LMS_Controller project
 
 import argparse
 import pytz
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 time_zone_list = pytz.all_timezones
@@ -34,9 +34,9 @@ if args.tz:
 for time_zone in time_zone_list:
     tz = pytz.timezone(time_zone)
     start = datetime(2025,1,1,0,0,0,0)
-    dst_database[time_zone] = {int(start.timestamp()):int(tz.utcoffset(start).total_seconds())}
+    dst_database[time_zone] = {int(start.replace(tzinfo=timezone.utc).timestamp()):int(tz.utcoffset(start).total_seconds())}
     try:
-        dst_info = {int(x.timestamp()):int(tz.utcoffset(x).total_seconds()) for x in tz._utc_transition_times if x.year > 2024}
+        dst_info = {int(x.replace(tzinfo=timezone.utc).timestamp()):int(tz.utcoffset(x).total_seconds()) for x in tz._utc_transition_times if x.year > 2024}
         if dst_info:
             dst_database[time_zone] = dst_info
     except:
