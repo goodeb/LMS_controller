@@ -128,7 +128,7 @@ def set_time():
                             time_tuple[5],
                             0))
     
-    if next_time_change:
+    if next_time_change_local:
         setup_timer('dst_change',{"expiration":next_time_change_local,
                                 "action":"set_time",
                                 "library":"utils",
